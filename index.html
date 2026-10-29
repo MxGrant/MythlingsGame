@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#191229" />
+  <title>Mythlings — A Pocket Bestiary Adventure</title>
+  <meta name="description" content="Mythlings is a charming retro monster-collecting RPG. Explore Willowbrook, catch 26 original creatures, and face three bosses." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23191229'/%3E%3Ctext x='50' y='73' font-size='64' text-anchor='middle' fill='%23ffd166'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span class="brand-name">MYTHLINGS</span>
+      </div>
+      <div class="topbar-info">
+        <span id="locationName" class="pill">Pocket Bestiary</span>
+        <span id="moneyLabel" class="pill money" title="Coin">0g</span>
+        <span id="questHint" class="quest-hint"></span>
+      </div>
+      <div class="topbar-actions">
+        <button id="muteBtn" class="icon-btn" title="Toggle sound" aria-label="Toggle sound">♪</button>
+        <button id="menuBtn" class="menu-btn small" title="Open menu (M)">MENU</button>
+      </div>
+    </header>
+
+    <main class="stage">
+      <div class="screen-frame" id="screenFrame">
+        <canvas id="gameCanvas" width="288" height="192" aria-label="Mythlings game view"></canvas>
+
+        <div id="worldHud" class="world-hud hidden">
+          <div id="mapName" class="map-tag">Willowbrook Town</div>
+          <div id="interactHint" class="interact-hint"></div>
+        </div>
+
+        <div id="battleHud" class="battle-hud hidden" aria-hidden="true">
+          <div class="combatant foe">
+            <div class="combatant-top">
+              <span id="foeName" class="combatant-name">???</span>
+              <span id="foeLevel" class="lvl">Lv.5</span>
+            </div>
+            <div class="hp-track"><div class="hp-fill" id="foeHp"></div></div>
+            <div class="subline"><span id="foeStatus"></span><span id="foeTeam"></span></div>
+          </div>
+          <div class="combatant ally">
+            <div class="combatant-top">
+              <span id="allyName" class="combatant-name">???</span>
+              <span id="allyLevel" class="lvl">Lv.5</span>
+            </div>
+            <div class="hp-track"><div class="hp-fill" id="allyHp"></div></div>
+            <div class="subline"><span id="allyHpText"></span><span id="allyStatus"></span></div>
+            <div class="exp-track"><div class="exp-fill" id="allyExp"></div></div>
+          </div>
+        </div>
+
+        <div id="dialogue" class="dialogue hidden" aria-live="polite">
+          <div id="dialogueName" class="dialogue-name"></div>
+          <div id="dialogueText" class="dialogue-text"></div>
+          <div id="dialogueChoices" class="dialogue-choices"></div>
+          <div class="dialogue-hint" id="dialogueHint">SPACE ▸</div>
+        </div>
+
+        <div id="toastArea" class="toast-area" aria-live="polite"></div>
+
+        <div id="touchControls" class="touch-controls" aria-hidden="true">
+          <div class="dpad">
+            <button class="dbtn up" data-dir="up" aria-label="Move up">▲</button>
+            <button class="dbtn left" data-dir="left" aria-label="Move left">◀</button>
+            <button class="dbtn right" data-dir="right" aria-label="Move right">▶</button>
+            <button class="dbtn down" data-dir="down" aria-label="Move down">▼</button>
+          </div>
+          <div class="touch-actions">
+            <button class="abtn b" id="touchB" aria-label="Menu">B</button>
+            <button class="abtn a" id="touchA" aria-label="Interact">A</button>
+          </div>
+        </div>
+      </div>
+
+      <section id="battlePanel" class="battle-panel hidden" aria-live="polite">
+        <div class="battle-msg">
+          <span class="msg-arrow" aria-hidden="true">▸</span>
+          <p id="battleMessage">What will you do?</p>
+        </div>
+        <div id="battleControls" class="battle-controls"></div>
+      </section>
+
+      <footer class="underbar">
+        <p id="statusLine">WASD / arrows to move · SPACE to interact · M for menu</p>
+        <p class="credit">An original pocket bestiary · 26 Mythlings to find</p>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Title -->
+  <div id="titleScreen" class="screen-overlay title-screen">
+    <div class="title-glow" aria-hidden="true"></div>
+    <div class="title-inner">
+      <div class="logo-wrap">
+        <p class="logo-kicker">A POCKET BESTIARY ADVENTURE</p>
+        <h1 class="logo">MYTH<span>LINGS</span></h1>
+        <p class="logo-sub">Catch the spark. Keep the wonder.</p>
+      </div>
+      <div class="title-panel">
+        <button id="newGameBtn" class="menu-btn primary">NEW JOURNEY</button>
+        <button id="continueBtn" class="menu-btn">CONTINUE</button>
+        <button id="howToBtn" class="menu-btn">HOW TO PLAY</button>
+      </div>
+      <p class="title-hint">Arrow keys / WASD to move · SPACE to talk · M for menu</p>
+    </div>
+  </div>
+
+  <!-- Starter choice -->
+  <div id="starterScreen" class="screen-overlay starter-screen hidden">
+    <div class="starter-inner">
+      <p class="starter-kicker">PROF. LINDEN'S LAB</p>
+      <h2 class="starter-title">Choose your first partner</h2>
+      <p class="starter-copy">Every journey starts with a small, brave creature. Pick the one who feels like a friend.</p>
+      <div id="starterCards" class="starter-cards"></div>
+    </div>
+  </div>
+
+  <!-- Ending -->
+  <div id="endingScreen" class="screen-overlay ending-screen hidden">
+    <div class="ending-inner">
+      <p class="ending-kicker">THE HOLLOW STAR IS QUIET</p>
+      <h2 class="ending-title">You did it, Rune.</h2>
+      <p class="ending-copy" id="endingCopy"></p>
+      <div id="endingStats" class="ending-stats"></div>
+      <div class="ending-actions">
+        <button id="endingContinue" class="menu-btn primary">KEEP EXPLORING</button>
+        <button id="endingNew" class="menu-btn">NEW JOURNEY</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal (menu, shop, storage) -->
+  <div id="overlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="overlay-backdrop" data-close="true"></div>
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="modalTitle">JOURNEY</h2>
+        <button id="modalClose" class="close-btn" aria-label="Close menu">✕</button>
+      </div>
+      <div id="modalTabs" class="modal-tabs"></div>
+      <div id="modalBody" class="modal-body"></div>
+    </div>
+  </div>
+
+  <noscript>Mythlings needs JavaScript enabled to run.</noscript>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

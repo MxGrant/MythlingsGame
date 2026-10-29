@@ -1,0 +1,12 @@
+{
+  "name": "mythlings",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Mythlings — a retro monster-collecting RPG in vanilla HTML, CSS and JavaScript.",
+  "scripts": {
+    "start": "python3 -m http.server 3000",
+    "test": "node tests/logic.test.mjs",
+    "check": "node --check js/main.js && node --check js/game.js && node --check js/ui.js && node --check js/engine/scene.js && node --check js/engine/art.js && node --check js/engine/battle.js"
+  }
+}
